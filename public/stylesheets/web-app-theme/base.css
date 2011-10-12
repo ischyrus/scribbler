@@ -298,10 +298,26 @@ input.checkbox {
 
 /* lists */
 
+li { 
+	list-style-type: none;
+}
+
+#lists {
+	min-height: 500px;
+}
+
+.listTitle {
+	float: left;
+	font-family: "Museo700, helvetica, arial, sans-serif";
+	font-size: 19px;
+}
+
 ul.list {
   margin: 0;
   padding: 0;
   list-style-type: none;
+	height: 500px;
+	float: left;
 }
 
 ul.list li {

@@ -11,6 +11,9 @@ class ScribblesController < ApplicationController
       format.xml  { render :xml => @scribbles }
     end
   end
+  
+  def sidebyside
+  end
 
   # GET /scribbles/1
   # GET /scribbles/1.xml

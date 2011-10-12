@@ -1,35 +1,50 @@
 <script src="http://js.pusherapp.com/1.9/pusher.min.js" type="text/javascript"></script>
 <script type="text/javascript">
-  var pusher = new Pusher('<%= Pusher.key %>');
-  channel = pusher.subscribe('<%= PUSHER_CHANNEL %>');
-  channel.bind('<%= @scribble.id %>', function(data) {
-    //window.console.log(data);
-    var elem = $('<li style="display:none"/>');
-    elem.append('<div class="left"><img class="avatar" src="'
-      + data.user.profile_image_url + '"></div>');
-    elem.append('<div class="item"><p>' + data.text + '</p></div>');
-    elem.append('<div class="clear"></div>');
-    $('#streamlist').prepend(elem);
-    elem.fadeIn();
-  });
+	var appendItemMethod = function(container) {
+		return function(data) {
+			var elem = $('<li style="display:none;" />');
+			elem.append('<div style="float:left;"><img class="avatar" src="' + data.user.profile_image_url + '"></div>');
+			elem.append('<div class="item"><p>' + data.text + '</p></div>');
+			elem.append('<div class="clear"></div>');
+
+			container.prepend(elem);
+			elem.fadeIn();
+		}
+	}
+
+	var numberOfFeeds = <%= Scribble.count %>;
+	var width = (100 / numberOfFeeds) - 1;
+	$(document).ready(function() {
+		var titlesDiv = $('#listTitles');
+		<% Scribble.all.each do |s| %>
+			titlesDiv.append($('<div class="listTitle" style="width: ' + width + '%"><%= s.filters[0] %></div>'));
+		<%end %>
+		for (var i = 1; i < numberOfFeeds + 1; i++) {
+			var container = $('<ul id="' + i.toString() + '" class="item" style="width: ' + width.toString() + '%;height: 500px; float:left;overflow:scroll;"><li /></ul>');
+			$('#lists').append(container);
+	
+			var pusher = new Pusher('<%= Pusher.key %>');
+		  channel = pusher.subscribe('<%= PUSHER_CHANNEL %>');
+		  channel.bind(i.toString(), appendItemMethod(container));
+		}
+	});
 </script>
 
 <div class="block">
   <div class="secondary-navigation">
     <ul class="wat-cf">
       <li class="first"><%= link_to "#{t("web-app-theme.list", :default => "List")}", scribbles_path  %></li>
-      <li><%= link_to "#{t("web-app-theme.new", :default => "New")}", new_scribble_path %></li>
-      <li class="active"><%= link_to "#{t("web-app-theme.show", :default => "Show")}", scribble_path %></li>
+      <li><%= link_to "#{t("web-app-theme.new", :default => "New")}", new_scribble_path %></li> 
     </ul>
   </div>          
   <div class="content">
     <h2 class="title">Scribbling</h2>
     <div class="inner">
 
-      <p>
-      <ul class="list" id="streamlist" style="overflow: scroll;">
-      </ul>
-			<div class="clear"></div>
+			<p id="listTitles"></p>
+      <p id="lists">
+      <!--<ul class="list" id="streamlist">
+      </ul>-->
       </p>
 
       <% if false %>      
